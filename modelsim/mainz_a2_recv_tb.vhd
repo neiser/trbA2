@@ -94,8 +94,8 @@ begin  -- arch1
 	Clk_Serial <= not Clk_Serial after 40 ns; -- serial runs at 12.5 MHz?
 
 	process
-		variable data : std_logic_vector(0 to 34) := b"1" & x"00700000"
-		                                             & b"11";
+		variable data : std_logic_vector(0 to 34) := b"1" & x"00909090"
+		                                             & b"01";
 		variable i : integer := 0;
 		variable cnt : integer := 50;
 	begin

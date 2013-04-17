@@ -195,8 +195,9 @@ begin
       number_reg <= shift_reg(31 downto 1);
       --status_reg <= shift_reg(7 downto 6);
 
-      -- check if control bit is 1 and parity is okay
-      if shift_reg(34) = '1' and xor_all(shift_reg(33 downto 1)) = '0' then
+      -- check if start and control bit is 1 and parity is okay
+      if shift_reg(34) = '1' and shift_reg(0) = '1'
+	      and xor_all(shift_reg(33 downto 1)) = '0' then
         error_reg <= '0';
       else
         error_reg <= '1';
