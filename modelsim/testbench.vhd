@@ -88,9 +88,6 @@ begin  -- arch1
 		variable cnt : integer := 10;
 	begin
 		wait until rising_edge(CLK_50);
-		--wait for 1 ns;
-		RESET_IN <= '0';
-		TRIGGER_IN <= '0';
 		MBS_IN <= '1';
 		if i < data'length and cnt = 0 then
 			MBS_IN <= data(i);
@@ -98,6 +95,20 @@ begin  -- arch1
 		else
 			cnt := cnt-1;
 		end if;
-	end process;	
+	end process;
+
+	
+	process
+	begin
+		wait until rising_edge(CLK);
+		RESET_IN <= '0';
+		TRIGGER_IN <= '0';
+		CONTROL_REG_IN <= x"00000000";
+		if TRG_SYNC_OUT = '1' then
+			TRIGGER_IN <= '1';
+		end if;	
+			
+	end process;
+	
 	
 end arch1;
