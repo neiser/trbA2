@@ -2,10 +2,10 @@ library ieee;
 use ieee.std_logic_1164.all;
 
 
-entity testbench is
-end testbench;
+entity mbs_volum_recv_tb is
+end mbs_volum_recv_tb;
 
-architecture arch1 of testbench is
+architecture arch1 of mbs_volum_recv_tb is
 
 	component mbs_vulom_recv
 		port (
