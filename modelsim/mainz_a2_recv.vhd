@@ -53,10 +53,12 @@ architecture arch1 of mainz_a2_recv is
 	constant timeoutcnt_Max : integer := 2000000; -- x 10 ns = 20us maximum
 	                                             -- time until trigger id can
 	                                             -- be received;
-
-  signal bitcnt    : integer range 0 to 34;
-  signal timeoutcnt : integer range 0 to timeoutcnt_Max; 
-  signal shift_reg : std_logic_vector(34 downto 0);
+	signal timeoutcnt : integer range 0 to timeoutcnt_Max;
+	
+	signal shift_reg : std_logic_vector(34 downto 0);
+	signal bitcnt    : integer range 0 to shift_reg'length;
+	
+  
 
   --signal first_bits_fast : std_logic;
   --signal first_bits_slow : std_logic;
@@ -123,7 +125,7 @@ begin
       when WAIT_FOR_STARTBIT =>
         timeoutcnt <= timeoutcnt-1;
         if reg_SERIAL_IN = '1' then
-	        bitcnt <= shift_reg'high;
+	        bitcnt <= shift_reg'length;
 	        state <= WAIT1;
         elsif timeoutcnt = 0 then
 	        state <= NO_TRG_ID_RECV;
@@ -161,8 +163,8 @@ begin
 
 	    when NO_TRG_ID_RECV =>
 		    -- we received no id after a trigger within the timeout, so
-		    -- set full trigger id and no control bit (forces error flag set!)
-		    shift_reg <= b"00" & x"ffffffff" & b"1"; 
+		    -- set bogus trigger id and no control bit (forces error flag set!)
+		    shift_reg <= b"1" & x"deadbeef" & b"00"; 
 		    state <= FINISH;
 		    
       when FINISH =>
@@ -186,11 +188,12 @@ begin
     wait until rising_edge(CLK);
     if done = '1' then
 	    -- here we cut off the highest bit of the received trigger id
-      number_reg <= shift_reg(31 downto 1);
+	    -- so shift_reg(33) is no
+      number_reg <= shift_reg(32 downto 2);
       --status_reg <= shift_reg(7 downto 6);
 
       -- check if control bit is 1 and parity is okay
-      if shift_reg(34) = '1' and xor_all(shift_reg(33 downto 1)) = '0' then
+      if shift_reg(0) = '1' and xor_all(shift_reg(33 downto 1)) = '0' then
         error_reg <= '0';
       else
         error_reg <= '1';
